@@ -1,7 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeBrowser", "ATNET_ProjektA\TreeBrowser.csproj", "{2A9FA45A-1241-467E-8D03-BF8292572F24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeBrowser", "TreeBrowser\TreeBrowser.csproj", "{2A9FA45A-1241-467E-8D03-BF8292572F24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesystemTreeProviderPlugin", "FilesystemTreeProviderPlugin\FilesystemTreeProviderPlugin.csproj", "{64D7D129-A7C6-420A-A031-5C1039486A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeBrowserPluginInterface", "TreeBrowserPluginInterface\TreeBrowserPluginInterface.csproj", "{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +17,13 @@ Global
 		{2A9FA45A-1241-467E-8D03-BF8292572F24}.Debug|x86.Build.0 = Debug|x86
 		{2A9FA45A-1241-467E-8D03-BF8292572F24}.Release|x86.ActiveCfg = Release|x86
 		{2A9FA45A-1241-467E-8D03-BF8292572F24}.Release|x86.Build.0 = Release|x86
+		{64D7D129-A7C6-420A-A031-5C1039486A5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{64D7D129-A7C6-420A-A031-5C1039486A5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{64D7D129-A7C6-420A-A031-5C1039486A5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{64D7D129-A7C6-420A-A031-5C1039486A5A}.Release|x86.Build.0 = Release|Any CPU
+		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Debug|x86.Build.0 = Debug|Any CPU
+		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Release|x86.ActiveCfg = Release|Any CPU
+		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
