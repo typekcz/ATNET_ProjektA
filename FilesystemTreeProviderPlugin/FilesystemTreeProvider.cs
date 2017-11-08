@@ -3,8 +3,12 @@ using System.IO;
 using TreeBrowserPluginInterface;
 
 namespace FilesystemTreeProviderPlugin {
-	public class FilesystemTreeProvider :  ITreeProvider {
+	public class FilesystemTreeProvider :  MarshalByRefObject, ITreeProvider {
 		public FilesystemTreeProvider(){
+		}
+
+		public string GetProviderName() {
+			return "Filesystem";
 		}
 
 		public ITreeNode GetTree(string path) {

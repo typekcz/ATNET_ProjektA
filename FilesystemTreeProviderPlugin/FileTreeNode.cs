@@ -4,7 +4,7 @@ using System.IO;
 using TreeBrowserPluginInterface;
 
 namespace FilesystemTreeProviderPlugin {
-	public class FileTreeNode : ITreeNode {
+	public class FileTreeNode : MarshalByRefObject, ITreeNode {
 		private FileInfo fileInfo;
 		public FileTreeNode(string path) {
 			fileInfo = new FileInfo(path);
@@ -20,10 +20,6 @@ namespace FilesystemTreeProviderPlugin {
 
 		public string GetName() {
 			return fileInfo.Name;
-		}
-
-		public ITreeNode GetParent() {
-			return new DirectoryTreeNode(fileInfo.Directory);
 		}
 
 		public bool HasChildren() {

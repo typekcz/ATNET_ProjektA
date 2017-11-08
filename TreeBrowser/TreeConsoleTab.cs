@@ -13,19 +13,24 @@ namespace TreeBrowser {
 		private ITreeNode root;
 		private LinkedList<TreeRow> rows;
 		private LinkedListNode<TreeRow> selectedRow;
+		private int scrollOffset;
 		public TreeConsoleTab(ITreeNode root) {
 			this.root = root;
+			Title = root.GetName();
 			rows = new LinkedList<TreeRow>();
 			rows.AddFirst(new TreeRow() {
 				node = root,
 				level = 0
 			});
 			selectedRow = rows.First;
+			scrollOffset = 0;
 			OnKeyPressEvent += (ref ConsoleKeyInfo keyInfo) => {
 				switch(keyInfo.Key){
 					case ConsoleKey.DownArrow:
 						if (selectedRow.Next != null) {
 							selectedRow = selectedRow.Next;
+							if (GetSelectedRowIndex() - scrollOffset > BottomBound - TopBound)
+								scrollOffset++;
 							/*if (selectedRow + scrollOffset - 1 > BottomBound - TopBound)
 								scrollOffset--;*/
 							changed = true;
@@ -34,6 +39,8 @@ namespace TreeBrowser {
 					case ConsoleKey.UpArrow:
 						if (selectedRow.Previous != null) {
 							selectedRow = selectedRow.Previous;
+							if (GetSelectedRowIndex() - scrollOffset < 0)
+								scrollOffset--;
 							/*if (selectedRow + scrollOffset + 1 > BottomBound - TopBound)
 								scrollOffset++;*/
 							changed = true;
@@ -52,6 +59,8 @@ namespace TreeBrowser {
 		}
 
 		private void ExpandRow(LinkedListNode<TreeRow> parent){
+			if (!parent.Value.node.HasChildren())
+				return;
 			LinkedListNode<TreeRow> row = parent;
 			foreach(ITreeNode child in parent.Value.node.GetChildren()){
 				row = rows.AddAfter(row, new TreeRow() {
@@ -71,11 +80,28 @@ namespace TreeBrowser {
 			}
 		}
 
+		private int GetSelectedRowIndex(){
+			LinkedListNode<TreeRow> start = selectedRow;
+			int i;
+			for (i = 0; start.Previous != null;i++){
+				start = start.Previous;
+			}
+			return i;
+		}
+
 		public override void Draw() {
 			base.Draw();
 			Console.SetCursorPosition(LeftBound, TopBound);
 
+			int rowIndex = 0;
+			int maxRows = BottomBound - TopBound;
 			for(LinkedListNode<TreeRow> row = rows.First; row != null; row = row.Next){
+				if (rowIndex - scrollOffset > maxRows)
+					break;
+				if(rowIndex < scrollOffset){
+					rowIndex++;
+					continue;
+				}
 				Console.ForegroundColor = ForegroundColor;
 				Console.BackgroundColor = BackgroundColor;
 				LinkedListNode<TreeRow> ancestor;
@@ -109,8 +135,12 @@ namespace TreeBrowser {
 					else
 						Console.Write("[ ] ");
 				}
+				string name = row.Value.node.GetName().Replace('\n', ' ').Trim();
+				name = name.Substring(0, Math.Min(name.Length, RightBound - Console.CursorLeft));
 				Console.WriteLine(row.Value.node.GetName());
 				Console.CursorLeft = LeftBound;
+
+				rowIndex++;
 			}
 		}
 	}

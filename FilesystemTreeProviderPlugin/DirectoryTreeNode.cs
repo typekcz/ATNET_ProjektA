@@ -4,7 +4,7 @@ using System.IO;
 using TreeBrowserPluginInterface;
 
 namespace FilesystemTreeProviderPlugin {
-	public class DirectoryTreeNode : ITreeNode {
+	public class DirectoryTreeNode : MarshalByRefObject, ITreeNode {
 		private DirectoryInfo dirInfo;
 		public DirectoryTreeNode(string path) {
 			dirInfo = new DirectoryInfo(path);
@@ -29,12 +29,12 @@ namespace FilesystemTreeProviderPlugin {
 			return dirInfo.Name;
 		}
 
-		public ITreeNode GetParent() {
-			return new DirectoryTreeNode(dirInfo.Parent);
-		}
-
 		public bool HasChildren() {
-			return (dirInfo.GetDirectories().Length + dirInfo.GetFiles().Length) > 0;
+			try {
+				return (dirInfo.GetDirectories().Length + dirInfo.GetFiles().Length) > 0;
+			} catch(Exception){
+				return false;
+			}
 		}
 	}
 }

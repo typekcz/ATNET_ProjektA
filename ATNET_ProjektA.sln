@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesystemTreeProviderPlugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeBrowserPluginInterface", "TreeBrowserPluginInterface\TreeBrowserPluginInterface.csproj", "{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlTreeProviderPlugin", "XmlTreeProviderPlugin\XmlTreeProviderPlugin.csproj", "{C1BD166D-D788-46AD-96AF-9BB1399A0E4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,5 +27,9 @@ Global
 		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Debug|x86.Build.0 = Debug|Any CPU
 		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Release|x86.ActiveCfg = Release|Any CPU
 		{68B2CABC-FF43-4E8A-B7E6-41A3AA45F801}.Release|x86.Build.0 = Release|Any CPU
+		{C1BD166D-D788-46AD-96AF-9BB1399A0E4C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C1BD166D-D788-46AD-96AF-9BB1399A0E4C}.Debug|x86.Build.0 = Debug|Any CPU
+		{C1BD166D-D788-46AD-96AF-9BB1399A0E4C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C1BD166D-D788-46AD-96AF-9BB1399A0E4C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
