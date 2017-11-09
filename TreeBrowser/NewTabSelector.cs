@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ConsoleUI;
 using TreeBrowserPluginInterface;
 
@@ -24,11 +25,21 @@ namespace TreeBrowser {
 						}
 						break;
 					case ConsoleKey.Enter:
+						ITreeProvider treeProv = TreeProvidersManager.GetProviders().Values[selectedProv];
 						try {
-							ITreeProvider treeProv = TreeProvidersManager.GetProviders().Values[selectedProv];
 							ConsoleManager.ReplaceTab(new TreeConsoleTab(treeProv.GetTree(EndInputText())));
-						} catch(Exception e){
-							ConsoleManager.ReplaceTab(new TextConsoleTab(e.Message){Title = "Error", ForegroundColor = ConsoleColor.Red});
+						} catch (Exception e) {
+							Debug.WriteLine("Tree creation of \"{0}\" throught \"{1}\" failed.", treeProv.GetProviderName());
+							Trace.WriteLine("Tree creation of \"{0}\" throught \"{1}\" failed.", treeProv.GetProviderName());
+							Debug.Indent();
+							Trace.Indent();
+							Trace.WriteLine(e.Message);
+							Debug.WriteLine(e.Message);
+							Debug.WriteLine(e.Source);
+							Debug.WriteLine(e.StackTrace);
+							Debug.Unindent();
+							Trace.Unindent();
+							ConsoleManager.ReplaceTab(new TextConsoleTab(e.Message) { Title = "Error", ForegroundColor = ConsoleColor.Red });
 						}
 						break;
 				}

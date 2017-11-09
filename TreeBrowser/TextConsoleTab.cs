@@ -17,6 +17,7 @@ namespace TreeBrowser {
 				if (row.Length < maxLength){
 					Console.Write(row);
 					Console.CursorTop++;
+					Console.CursorLeft = LeftBound + 1;
 				} else {
 					string s = row;
 					while (s.Length > 0) {

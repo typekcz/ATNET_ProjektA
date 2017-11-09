@@ -1,17 +1,18 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using ConsoleUI;
 using TreeBrowserPluginInterface;
 
 namespace TreeBrowser {
 	class Program {
-		private static FileStream logFile;
-		public static StreamWriter log;
 		public static void Main(string[] args) {
 			Console.Title = "TreeBrowser";
+			Debug.Listeners.Add(new TextWriterTraceListener("debug.log"));
+			Trace.Listeners.Add(new TextWriterTraceListener("trace.log"));
 
-			logFile = File.Open("log.txt", FileMode.Create);
-			log = new StreamWriter(logFile);
+			Trace.WriteLine("Start Trace " + DateTime.Now);
+			Debug.WriteLine("Start Debug " + DateTime.Now);
 
 			TreeProvidersManager.LoadPlugins();
 			TreeProvidersManager.StartFSWatcher();
@@ -26,8 +27,10 @@ namespace TreeBrowser {
 			ConsoleManager.AddTab(new NewTabSelector());
 			ConsoleManager.RunUI();
 
-			log.Close();
-			logFile.Close();
+			Trace.WriteLine("End " + DateTime.Now);
+			Trace.Flush();
+			Debug.WriteLine("End " + DateTime.Now);
+			Debug.Flush();
 		}
 	}
 }

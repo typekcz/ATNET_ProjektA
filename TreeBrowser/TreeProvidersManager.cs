@@ -5,6 +5,7 @@ using System.Reflection;
 using TreeBrowserPluginInterface;
 using System.Linq;
 using ConsoleUI;
+using System.Diagnostics;
 
 namespace TreeBrowser {
 	static public class TreeProvidersManager {
@@ -28,11 +29,12 @@ namespace TreeBrowser {
 				name = string.Format(name, num);
 			}
 			providers.Add(name, provider);
-			Program.log.WriteLine("Registered TreeProvider \"{0}\"", name);
+			Debug.WriteLine("Registered TreeProvider \"{0}\"", new object[] { name });
+			Trace.WriteLine("Registered TreeProvider \"" + name + "\"");
 			return true;
 		}
 
-		static public bool RegisterProvider(string dll){
+		static public bool RegisterProvider(string dll) {
 			Plugin plugin = new Plugin();
 			plugin.appDomain = AppDomain.CreateDomain(
 				dll,
@@ -44,24 +46,36 @@ namespace TreeBrowser {
 					PrivateBinPath = PLUGIN_DIR
 				}
 			);
+			Debug.WriteLine("New AppDomain");
+			Debug.Indent();
+			Debug.WriteLine("FriendlyName = {0}", new object[]{plugin.appDomain.FriendlyName });
+			Debug.WriteLine("ApplicationBase = {0}", new object[] { plugin.appDomain.SetupInformation.ApplicationBase });
+			Debug.WriteLine("ConfigurationFile = {0}", new object[] { plugin.appDomain.SetupInformation.ConfigurationFile });
+			Debug.WriteLine("PrivateBinPath = {0}", new object[] { plugin.appDomain.SetupInformation.PrivateBinPath });
+			Debug.Unindent();
 			dll = Path.GetFullPath(Path.Combine(PLUGIN_DIR, dll));
 			//plugin.appDomain.Load(File.ReadAllBytes("TreeBrowserPluginInterface.dll"));
 			//plugin.appDomain.Load(File.ReadAllBytes(dll));
 			plugin.assembly = Assembly.LoadFrom(dll);
 			if(plugin.assembly != null){
-				Program.log.WriteLine("Assembly \"{0}\" loaded.", dll);
+				Trace.WriteLine("Assembly \"" + dll + "\" loaded.");
+				Debug.WriteLine("Assembly \"{0}\" loaded.", new object[] { dll });
+				Debug.Indent();
+				Debug.WriteLine(plugin.assembly.FullName);
+				Debug.Unindent();
 			} else {
-				Program.log.WriteLine("Assembly \"{0}\" could not be loaded.", dll);
+				Trace.WriteLine("Assembly \"" + dll + "\" could not be loaded.");
+				Debug.WriteLine("Assembly \"{0}\" could not be loaded.", new object[] { dll });
 				return false;
 			}
 			bool somethingLoaded = false;
 			foreach(Type t in plugin.assembly.GetTypes()){
 				if(t.IsAbstract){
-					Program.log.WriteLine("Type \"{0}\" is abstract.", t);
+					Debug.WriteLine("Type \"{0}\" is abstract.", new object[] { t.Name });
 					continue;
 				}
 				if(!t.IsMarshalByRef){
-					Program.log.WriteLine("Type \"{0}\" is not MarshalByRef.", t);
+					Debug.WriteLine("Type \"{0}\" is not MarshalByRef.", new object[] { t.Name });
 					continue;
 				}
 				if(t.GetInterfaces().Contains(typeof(ITreeProvider))){
@@ -72,9 +86,10 @@ namespace TreeBrowser {
 					RegisterProvider((ITreeProvider)prov);
 					plugin.treeProviders.Add((ITreeProvider)prov);
 					somethingLoaded = true;
-					Program.log.WriteLine("Type \"{0}\" implements interface.", t);
+					Trace.WriteLine("Type \"" + t.Name + "\" implements interface.", t.Name);
+					Debug.WriteLine("Type \"{0}\" implements interface.", new object[] { t.Name });
 				} else {
-					Program.log.WriteLine("Type \"{0}\" does not implements interface.", t);
+					Debug.WriteLine("Type \"{0}\" does not implements interface.", new object[] { t.Name });
 				}
 			}
 			if(somethingLoaded){
@@ -88,8 +103,11 @@ namespace TreeBrowser {
 			if (p == null)
 				return false;
 			foreach (ITreeProvider tp in p.treeProviders) {
+				Trace.WriteLine("Unregistered provider \"" + tp.GetProviderName() + "\".");
+				Debug.WriteLine("Unregistered provider \"{0}\".", new object[] { tp.GetProviderName() });
 				providers.Remove(providers.Where((arg) => arg.Value == tp).First().Key);
 			}
+			Debug.WriteLine("Unloaded AppDomain \"{0}\".", new object[] { p.appDomain.FriendlyName });
 			AppDomain.Unload(p.appDomain);
 			return true;
 		}
@@ -99,30 +117,41 @@ namespace TreeBrowser {
 		}
 
 		static public void LoadPlugins(){
-			Program.log.WriteLine(" --- LoadPlugins --- ");
+			Trace.WriteLine("Loading plugins...");
+			Trace.Indent();
+			Debug.WriteLine("Loading plugins...");
+			Debug.Indent();
 			DirectoryInfo di = new DirectoryInfo(PLUGIN_DIR);
 			foreach (FileInfo fi in di.GetFiles()) {
 				if (fi.Extension == ".dll"){
 					RegisterProvider(fi.Name);
 				}
 			}
+			Trace.Unindent();
+			Trace.Flush();
+			Debug.Unindent();
+			Debug.Flush();
 		}
 
 		static public void StartFSWatcher(){
 			fsWatcher = new FileSystemWatcher(PLUGIN_DIR, "*.dll");
 
 			fsWatcher.Created += (sender, e) => {
-				Program.log.WriteLine(" --- FSWatcher --- ");
+				Debug.WriteLine("FSWatcher - Created");
+				Debug.Indent();
 				if(RegisterProvider(e.Name)){
 					ConsoleManager.ProvidersChanged();
 				}
+				Debug.Unindent();
 			};
 
 			fsWatcher.Deleted += (sender, e) => {
-				Program.log.WriteLine(" --- FSWatcher --- ");
+				Debug.WriteLine("FSWatcher - Deleted");
+				Debug.Indent();
 				if(UnregisterProvider(e.Name)){
 					ConsoleManager.ProvidersChanged();
 				}
+				Debug.Unindent();
 			};
 			fsWatcher.EnableRaisingEvents = true;
 		}
