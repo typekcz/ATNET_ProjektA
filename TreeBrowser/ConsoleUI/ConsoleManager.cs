@@ -43,18 +43,21 @@ namespace ConsoleUI {
 
 		static public void RunUI() {
 			Console.CursorVisible = false;
-
+			
 			eventThread = new Thread(HandleEvents);
 			eventThread.Start();
 
 			if (tabs.Count == 0)
 				throw new ApplicationException("No tabs.");
 
+			Draw();
+			Console.CursorTop = 0;
+
 			while (running) {
 				ConsoleTab tab;
 				lock (tabs) {
 					if (tabsChanged) {
-						Draw();
+						DrawTabs();
 						tab = tabs[activeTab];
 						lock (Console.Out) {
 							tab.Draw();
@@ -87,6 +90,26 @@ namespace ConsoleUI {
 		}
 
 		static private void Draw() {
+			DrawTabs();
+			lock (Console.Out) {
+				Console.BackgroundColor = ActiveTabBackgroundColor;
+				Console.ForegroundColor = ActiveTabForegroundColor;
+				for (int y = 1; y < Console.WindowHeight; y++) {
+					WriteAt(0, y, " ");
+					WriteAt(Console.WindowWidth - 1, y, " ");
+				}
+				Console.SetCursorPosition(0, 1);
+				for (int x = 1; x < Console.WindowWidth; x++) {
+					Console.Write(' ');
+				}
+				Console.SetCursorPosition(0, Console.WindowHeight - 1);
+				for (int x = 1; x < Console.WindowWidth; x++) {
+					Console.Write(' ');
+				}
+			}
+		}
+
+		static private void DrawTabs() {
 			lock (Console.Out) {
 				tabsChanged = false;
 				Console.CursorVisible = false;
@@ -110,25 +133,6 @@ namespace ConsoleUI {
 				Console.BackgroundColor = BackgroundColor;
 				for (int i = fillFrom; i < Console.WindowWidth; i++) {
 					Console.Write(" ");
-				}
-				Console.SetCursorPosition(fillFrom, 0);
-				for (int i = fillFrom; i < Console.WindowWidth; i++) {
-					Console.Write(" ");
-				}
-
-				Console.BackgroundColor = ActiveTabBackgroundColor;
-				Console.ForegroundColor = ActiveTabForegroundColor;
-				for (int y = 1; y < Console.WindowHeight; y++) {
-					WriteAt(0, y, " ");
-					WriteAt(Console.WindowWidth - 1, y, " ");
-				}
-				Console.SetCursorPosition(0, 1);
-				for (int x = 1; x < Console.WindowWidth; x++) {
-					Console.Write(' ');
-				}
-				Console.SetCursorPosition(0, Console.WindowHeight - 1);
-				for (int x = 1; x < Console.WindowWidth; x++) {
-					Console.Write(' ');
 				}
 			}
 		}

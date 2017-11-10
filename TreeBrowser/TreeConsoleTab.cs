@@ -31,8 +31,10 @@ namespace TreeBrowser {
 							selectedRow = selectedRow.Next;
 							if (GetSelectedRowIndex() - scrollOffset > BottomBound - TopBound)
 								scrollOffset++;
-							/*if (selectedRow + scrollOffset - 1 > BottomBound - TopBound)
-								scrollOffset--;*/
+							else {
+								drawFrom = selectedRow.Previous;
+								drawToEnd = false;
+							}
 							changed = true;
 						}
 						break;
@@ -41,8 +43,10 @@ namespace TreeBrowser {
 							selectedRow = selectedRow.Previous;
 							if (GetSelectedRowIndex() - scrollOffset < 0)
 								scrollOffset--;
-							/*if (selectedRow + scrollOffset + 1 > BottomBound - TopBound)
-								scrollOffset++;*/
+							else {
+								drawFrom = selectedRow;
+								drawToEnd = false;
+							}
 							changed = true;
 						}
 						break;
@@ -52,6 +56,8 @@ namespace TreeBrowser {
 						} else {
 							ExpandRow(selectedRow);
 						}
+						drawFrom = selectedRow;
+						drawToEnd = true;
 						changed = true;
 						break;
 				}
@@ -89,16 +95,43 @@ namespace TreeBrowser {
 			return i;
 		}
 
+		private LinkedListNode<TreeRow> drawFrom = null;
+		private bool drawToEnd = true;
 		public override void Draw() {
-			base.Draw();
+			Draw(drawFrom, drawToEnd);
+			drawFrom = null;
+			drawToEnd = true;
+		}
+		private void Draw(LinkedListNode<TreeRow> from = null, bool toEnd = true) {
+			//base.Draw();
+			changed = false;
 			Console.SetCursorPosition(LeftBound, TopBound);
 
 			int rowIndex = 0;
 			int maxRows = BottomBound - TopBound;
+			bool fromNodeFound = false;
 			for(LinkedListNode<TreeRow> row = rows.First; row != null; row = row.Next){
 				if (rowIndex - scrollOffset > maxRows)
 					break;
-				if(rowIndex < scrollOffset){
+
+				if (from != null) {
+					if (fromNodeFound) {
+						if (!toEnd && row.Previous != from) {
+							break;
+						}
+					} else {
+						if (row == from) {
+							fromNodeFound = true;
+							Console.CursorTop = Math.Max(TopBound, rowIndex + TopBound - scrollOffset);
+
+						} else {
+							rowIndex++;
+							continue;
+						}
+					}
+				}
+
+				if (rowIndex < scrollOffset){
 					rowIndex++;
 					continue;
 				}
@@ -137,10 +170,24 @@ namespace TreeBrowser {
 				}
 				string name = row.Value.node.GetName().Replace('\n', ' ').Trim();
 				name = name.Substring(0, Math.Min(name.Length, RightBound - Console.CursorLeft));
-				Console.WriteLine(row.Value.node.GetName());
+				Console.Write(row.Value.node.GetName());
+
+				Console.ForegroundColor = ForegroundColor;
+				Console.BackgroundColor = BackgroundColor;
+				while (Console.CursorLeft <= RightBound)
+					Console.Write(' ');
 				Console.CursorLeft = LeftBound;
+				Console.CursorTop++;
 
 				rowIndex++;
+			}
+			if (toEnd) {
+				while (Console.CursorTop <= BottomBound) {
+					while (Console.CursorLeft <= RightBound)
+						Console.Write(' ');
+					Console.CursorLeft = LeftBound;
+					Console.CursorTop++;
+				}
 			}
 		}
 	}
